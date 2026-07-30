@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://epsilon-lab-atelier.github.io/voronoi-field-lab/sitemap.xml

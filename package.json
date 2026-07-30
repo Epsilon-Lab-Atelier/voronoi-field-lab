@@ -1,0 +1,11 @@
+{
+  "name": "voronoi-field-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "点を置いてボロノイ図を学べるEpsilonLabの無料ブラウザアプリ",
+  "scripts": {
+    "test": "node tests/voronoi-core.test.js"
+  },
+  "author": "EpsilonLab",
+  "license": "SEE LICENSE IN LICENSE.md"
+}

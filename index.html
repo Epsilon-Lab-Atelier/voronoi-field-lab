@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10182d">
+  <meta name="description" content="画面に点を置き、動かしながらボロノイ図を学べる無料の科学学習アプリです。距離の単位をkmとmileで切り替え、単位と空間の関係を確かめられます。">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="EpsilonLab">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none';">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EpsilonLab">
+  <meta property="og:title" content="Voronoi Field Lab | 点を置いて、世界を分けてみよう">
+  <meta property="og:description" content="点を追加して動かすだけで、最寄りの領域がリアルタイムに変わります。ボロノイ図と距離の単位を、触って学べる無料アプリ。">
+  <meta property="og:url" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/">
+  <meta property="og:image" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/assets/images/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="canonical" href="https://epsilon-lab-atelier.github.io/voronoi-field-lab/">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <title>Voronoi Field Lab | EpsilonLab</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+
+  <header class="site-header">
+    <a class="brand" href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer" aria-label="EpsilonLabのnoteを開く">
+      <span class="brand-mark" aria-hidden="true">e</span>
+      <span>
+        <strong>EpsilonLab</strong>
+        <small>Science x Exploration x Everyday Design</small>
+      </span>
+    </a>
+    <nav class="header-links" aria-label="関連リンク">
+      <a href="#science">科学の話</a>
+      <a href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer">note</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">INTERACTIVE SCIENCE APP</p>
+        <h1 id="page-title">Voronoi Field Lab</h1>
+        <p class="hero-lead">点を置いて、世界を「いちばん近い場所」に分けてみよう。</p>
+        <p class="hero-note">クリックやタップで点を追加し、ドラッグして動かせます。kmとmileを切り替えても境界が変わらないことも確かめてみてください。</p>
+      </div>
+      <div class="hero-badge" aria-label="無料・登録不要・端末内で処理">
+        <span>FREE</span>
+        <strong>登録不要</strong>
+        <small>データ送信なし</small>
+      </div>
+    </section>
+
+    <section class="app-section" aria-labelledby="lab-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LAB</p>
+          <h2 id="lab-title">点を置いて実験する</h2>
+        </div>
+        <p>最初から4点のサンプルが入っています。まずは点を1つ動かして、境界の変化を見てみましょう。</p>
+      </div>
+
+      <div class="app-layout">
+        <div class="workspace-card">
+          <div class="workspace-toolbar" aria-label="キャンバスの操作モード">
+            <div class="segmented-control" role="group" aria-label="操作モード">
+              <button class="segment is-active" type="button" data-mode="edit" aria-pressed="true">
+                <span aria-hidden="true">+</span> 点を編集
+              </button>
+              <button class="segment" type="button" data-mode="probe" aria-pressed="false">
+                <span aria-hidden="true">?</span> 最寄りを調べる
+              </button>
+            </div>
+            <div class="toolbar-actions">
+              <button id="undoButton" class="button button-ghost" type="button" disabled>元に戻す</button>
+              <button id="exportButton" class="button button-primary" type="button">PNG保存</button>
+            </div>
+          </div>
+
+          <div class="canvas-frame" id="canvasFrame">
+            <canvas id="voronoiCanvas" tabindex="0" role="application" aria-label="ボロノイ図の編集キャンバス。編集モードでは空白をクリックすると点を追加し、点をドラッグすると移動できます。"></canvas>
+            <div class="canvas-hint" id="canvasHint">
+              <strong>編集モード</strong>
+              <span>空白をクリック: 追加 / 点をドラッグ: 移動</span>
+            </div>
+          </div>
+
+          <div class="workspace-status">
+            <p id="statusText" aria-live="polite">4個の点からボロノイ図を作成しています。</p>
+            <p class="keyboard-help">キーボード: 矢印で選択点を移動 / Deleteで削除 / CtrlまたはCommand + Zで元に戻す</p>
+          </div>
+        </div>
+
+        <aside class="control-panel" aria-label="ボロノイ図の設定">
+          <section class="control-group">
+            <div class="control-heading">
+              <h3>配置</h3>
+              <span class="control-number">01</span>
+            </div>
+            <label for="presetSelect">サンプル</label>
+            <select id="presetSelect">
+              <option value="sample">基本の4点</option>
+              <option value="territory">動物の縄張り</option>
+              <option value="cluster">密集と孤立</option>
+              <option value="grid">ほぼ均等な配置</option>
+            </select>
+
+            <div class="inline-fields">
+              <label for="randomCount">ランダム点数</label>
+              <input id="randomCount" type="number" min="3" max="30" step="1" value="8" inputmode="numeric">
+            </div>
+            <button id="randomButton" class="button button-secondary button-full" type="button">ランダムに置く</button>
+            <button id="clearButton" class="button button-ghost button-full" type="button">すべて消す</button>
+          </section>
+
+          <section class="control-group">
+            <div class="control-heading">
+              <h3>選択中の点</h3>
+              <span class="control-number">02</span>
+            </div>
+            <div id="selectionInfo" class="selection-info">
+              <strong>点を選択してください</strong>
+              <span>キャンバス上の点をクリックできます。</span>
+            </div>
+            <button id="deleteButton" class="button button-danger button-full" type="button" disabled>選択した点を削除</button>
+          </section>
+
+          <section class="control-group">
+            <div class="control-heading">
+              <h3>スケールと単位</h3>
+              <span class="control-number">03</span>
+            </div>
+            <div class="field-pair">
+              <div>
+                <label for="fieldWidthInput">フィールドの横幅</label>
+                <input id="fieldWidthInput" type="number" min="0.1" max="10000" step="0.1" value="10" inputmode="decimal">
+              </div>
+              <div>
+                <label for="unitSelect">単位</label>
+                <select id="unitSelect">
+                  <option value="km">km</option>
+                  <option value="mi">mile</option>
+                </select>
+              </div>
+            </div>
+            <p class="control-help">単位を変えると数字だけが変わり、図の境界は変わりません。</p>
+          </section>
+
+          <section class="control-group">
+            <div class="control-heading">
+              <h3>表示</h3>
+              <span class="control-number">04</span>
+            </div>
+            <label class="toggle-row">
+              <span>領域の色</span>
+              <input id="fillToggle" type="checkbox" checked>
+              <span class="toggle" aria-hidden="true"></span>
+            </label>
+            <label class="toggle-row">
+              <span>点の番号</span>
+              <input id="pointLabelToggle" type="checkbox" checked>
+              <span class="toggle" aria-hidden="true"></span>
+            </label>
+            <label class="toggle-row">
+              <span>領域の面積</span>
+              <input id="areaToggle" type="checkbox" checked>
+              <span class="toggle" aria-hidden="true"></span>
+            </label>
+          </section>
+        </aside>
+      </div>
+
+      <div class="stats-grid" aria-label="現在の図の概要">
+        <article class="stat-card">
+          <span>点の数</span>
+          <strong id="pointCountStat">4</strong>
+          <small>最大30点</small>
+        </article>
+        <article class="stat-card">
+          <span>フィールド</span>
+          <strong id="fieldSizeStat">10.0 x 6.0 km</strong>
+          <small>縦横比 5:3</small>
+        </article>
+        <article class="stat-card">
+          <span>平均領域</span>
+          <strong id="meanAreaStat">15.00 km²</strong>
+          <small>全体面積 / 点の数</small>
+        </article>
+        <article class="stat-card">
+          <span>最寄り調査</span>
+          <strong id="probeStat">未選択</strong>
+          <small>「最寄りを調べる」で確認</small>
+        </article>
+      </div>
+
+      <details class="region-details">
+        <summary>領域ごとの面積を見る</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">点</th>
+                <th scope="col">面積</th>
+                <th scope="col">全体に占める割合</th>
+              </tr>
+            </thead>
+            <tbody id="regionTableBody"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section id="science" class="science-section" aria-labelledby="science-title">
+      <div class="section-heading section-heading-light">
+        <div>
+          <p class="eyebrow">SCIENCE</p>
+          <h2 id="science-title">この図は、何を表しているの?</h2>
+        </div>
+        <p>ボロノイ図は、平面上のすべての場所を「どの点にいちばん近いか」で分けた図です。</p>
+      </div>
+
+      <div class="science-grid">
+        <article class="science-card">
+          <span class="science-index">01</span>
+          <h3>縄張りの単純なモデル</h3>
+          <p>点を動物の巣やねぐらと考えると、それぞれの領域は「いちばん近い巣の範囲」になります。実際の縄張りには餌、水場、地形、個体差も関わるため、これは最初の仮説です。</p>
+        </article>
+        <article class="science-card">
+          <span class="science-index">02</span>
+          <h3>単位と距離は別の話</h3>
+          <p>kmをmileへ変えると数字は変わりますが、近い・遠いの順番は変わりません。そのため、ボロノイ図の境界も同じままです。</p>
+        </article>
+        <article class="science-card">
+          <span class="science-index">03</span>
+          <h3>現実との違いが探究になる</h3>
+          <p>川、道路、坂、営業時間などを入れると「本当に行きやすい場所」は変わるかもしれません。単純なモデルと現実の違いを見つけることが、科学の入口になります。</p>
+        </article>
+      </div>
+
+      <div class="challenge-box">
+        <div>
+          <p class="eyebrow">TRY IT</p>
+          <h3>小さな探究課題</h3>
+        </div>
+        <ol>
+          <li>点を1つだけゆっくり動かし、どの境界が動くか観察する。</li>
+          <li>kmとmileを切り替え、領域の形が変わらないことを確かめる。</li>
+          <li>点を密集させたとき、領域の面積がどう変わるか比べる。</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Voronoi Field Lab</strong>
+      <span>v0.1.0</span>
+    </div>
+    <p>Created by EpsilonLab. このアプリは端末内だけで動作し、入力した点を外部へ送信しません。</p>
+    <nav aria-label="フッターリンク">
+      <a href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer">科学記事を読む</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="license.html">License</a>
+    </nav>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <noscript>
+    <div class="noscript-message">このアプリを使うにはJavaScriptを有効にしてください。</div>
+  </noscript>
+
+  <script src="assets/js/voronoi-core.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
