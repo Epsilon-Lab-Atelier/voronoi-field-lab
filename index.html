@@ -14,14 +14,14 @@
   <meta property="og:title" content="Voronoi Field Lab | 点を置いて、世界を分けてみよう">
   <meta property="og:description" content="点を追加して動かすだけで、最寄りの領域がリアルタイムに変わります。ボロノイ図と距離の単位を、触って学べる無料アプリ。">
   <meta property="og:url" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/">
-  <meta property="og:image" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/assets/images/og-image.png">
+ <meta property="og:image" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/assets/images/epsilonlab-header.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="canonical" href="https://epsilon-lab-atelier.github.io/voronoi-field-lab/">
-  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" href="assets/images/epsilonlab-logo.png">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/css/app.css">
@@ -31,13 +31,17 @@
   <a class="skip-link" href="#main-content">本文へ移動</a>
 
   <header class="site-header">
-    <a class="brand" href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer" aria-label="EpsilonLabのnoteを開く">
-      <span class="brand-mark" aria-hidden="true">e</span>
-      <span>
-        <strong>EpsilonLab</strong>
-        <small>Science x Exploration x Everyday Design</small>
-      </span>
-    </a>
+<a class="brand" href="#top" aria-label="Voronoi Field Lab home">
+  <img
+    src="assets/images/epsilonlab-logo.png"
+    alt="Epsilon Lab logo"
+    class="brand__logo"
+  >
+  <div class="brand__text">
+    <span class="brand__title">Voronoi Field Lab</span>
+    <span class="brand__subtitle">by Epsilon Lab</span>
+  </div>
+</a>
     <nav class="header-links" aria-label="関連リンク">
       <a href="#science">科学の話</a>
       <a href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer">note</a>
@@ -45,19 +49,22 @@
   </header>
 
   <main id="main-content">
-    <section class="hero" aria-labelledby="page-title">
-      <div class="hero-copy">
-        <p class="eyebrow">INTERACTIVE SCIENCE APP</p>
-        <h1 id="page-title">Voronoi Field Lab</h1>
-        <p class="hero-lead">点を置いて、世界を「いちばん近い場所」に分けてみよう。</p>
-        <p class="hero-note">クリックやタップで点を追加し、ドラッグして動かせます。kmとmileを切り替えても境界が変わらないことも確かめてみてください。</p>
-      </div>
-      <div class="hero-badge" aria-label="無料・登録不要・端末内で処理">
-        <span>FREE</span>
-        <strong>登録不要</strong>
-        <small>データ送信なし</small>
-      </div>
-    </section>
+<section class="hero" id="top">
+  <div class="hero__inner">
+    <img
+      src="assets/images/epsilonlab-header.png"
+      alt="Epsilon Lab header"
+      class="hero__image"
+    >
+    <div class="hero__content">
+      <h1>Voronoi Field Lab</h1>
+      <p>
+        点を置くだけで、世界が縄張りに分かれる。
+        いちばん近い場所を可視化する、インタラクティブな学習アプリです。
+      </p>
+    </div>
+  </div>
+</section>
 
     <section class="app-section" aria-labelledby="lab-title">
       <div class="section-heading">
@@ -191,7 +198,7 @@
         </article>
         <article class="stat-card">
           <span>平均領域</span>
-          <strong id="meanAreaStat">15.00 km²</strong>
+          <strong id="meanAreaStat">15.00 km\UTF{00B2}</strong>
           <small>全体面積 / 点の数</small>
         </article>
         <article class="stat-card">

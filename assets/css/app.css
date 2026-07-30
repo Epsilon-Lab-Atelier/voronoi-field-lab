@@ -94,9 +94,33 @@ summary:focus-visible {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  color: var(--ink);
+  gap: 0.85rem;
   text-decoration: none;
+  color: inherit;
+}
+
+.brand__logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand__title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.brand__subtitle {
+  font-size: 0.82rem;
+  opacity: 0.8;
 }
 
 .brand-mark {
@@ -198,6 +222,33 @@ main {
   position: relative;
   z-index: 1;
   max-width: 760px;
+}
+
+.hero {
+  margin-bottom: 1.5rem;
+}
+
+.hero__inner {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero__image {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 18px;
+  display: block;
+}
+
+.hero__content h1 {
+  margin: 0 0 0.5rem;
+}
+
+.hero__content p {
+  margin: 0;
+  line-height: 1.7;
 }
 
 .eyebrow {
