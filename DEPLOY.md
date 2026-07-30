@@ -1,4 +1,4 @@
-# GitHub Pagesへの公開手順
+# v0.1.1への更新とGitHub Pagesへの反映
 
 想定するGitHubリポジトリ:
 
@@ -6,157 +6,110 @@
 https://github.com/Epsilon-Lab-Atelier/voronoi-field-lab
 ```
 
-公開予定URL:
+公開URL:
 
 ```text
 https://epsilon-lab-atelier.github.io/voronoi-field-lab/
 ```
 
-## 1. ZIPを展開する
-
-`Voronoi-Field-Lab-v0.1.0.zip` を、次のフォルダ内へ展開します。
-
-```text
-$HOME/Dropbox/share_data/open_material/EpsilonLab/local_repo/voronoi_lab/
-```
-
-展開後は、次の構成になります。
-
-```text
-voronoi_lab/
-  v0.1.0/
-    index.html
-    assets/
-    README.md
-    ...
-```
-
-## 2. 親フォルダのGit設定を確認する
-
-以前 `voronoi_lab` 直下で `git init` を実行している場合、親フォルダに `.git` が残っている可能性があります。バージョンフォルダをGitリポジトリのルートにするため、親の `.git` は一旦バックアップします。
-
-```bash
-cd "$HOME/Dropbox/share_data/open_material/EpsilonLab/local_repo/voronoi_lab"
-
-if [ -d .git ]; then
-  mv .git .git-parent-backup
-fi
-```
-
-この操作は削除ではなく名前変更なので、必要なら元に戻せます。初回pushが完了し、親側のGit履歴が不要だと確認できた後に `.git-parent-backup` を削除してください。
-
-## 3. v0.1.0をGitリポジトリとして初期化する
+## 1. 現在のv0.1.0を確認する
 
 ```bash
 cd "$HOME/Dropbox/share_data/open_material/EpsilonLab/local_repo/voronoi_lab/v0.1.0"
 
-git init -b main
-
-git config --local user.name "EpsilonLab"
-git config --local user.email "310764549+Epsilon-Lab-Atelier@users.noreply.github.com"
+git status --short
+git pull --ff-only
 ```
 
-設定を確認します。
+`git status --short` に何も表示されず、v0.1.0の変更がすべてpush済みであることを確認します。
+
+## 2. ZIPを親フォルダへ展開する
 
 ```bash
-git config --show-origin --get user.name
-git config --show-origin --get user.email
+cd "$HOME/Dropbox/share_data/open_material/EpsilonLab/local_repo/voronoi_lab"
+unzip "$HOME/Downloads/Voronoi-Field-Lab-v0.1.1.zip"
 ```
 
-どちらも `file:.git/config` から読み込まれていれば、このリポジトリだけに設定されています。
+展開後は次のようになります。
 
-## 4. 公開前チェック
+```text
+voronoi_lab/
+  v0.1.0/
+  v0.1.1/
+```
+
+## 3. Git履歴をv0.1.1へ移す
+
+v0.1.0の作業ツリーを残したまま、Git管理情報だけを新しい版へ移します。
+
+```bash
+cd "$HOME/Dropbox/share_data/open_material/EpsilonLab/local_repo/voronoi_lab"
+
+mv v0.1.0/.git v0.1.1/.git
+cd v0.1.1
+```
+
+確認します。
+
+```bash
+git status --short
+git remote -v
+git config --local --get user.name
+git config --local --get user.email
+```
+
+作者名とメールが次であることを確認します。
+
+```text
+EpsilonLab
+310764549+Epsilon-Lab-Atelier@users.noreply.github.com
+```
+
+## 4. 公開前チェックとローカル確認
 
 ```bash
 ./scripts/preflight.sh
-```
-
-JavaScriptの構文、ボロノイ計算のテスト、公開物に含めたくないローカル情報をまとめて確認します。
-
-ローカル表示も確認できます。
-
-```bash
 ./scripts/serve-local.sh
 ```
 
-ブラウザで `http://localhost:8000/` を開きます。終了するときはターミナルで `Control + C` を押します。
+ブラウザで `http://localhost:8000/` を開き、次を確認します。
 
-## 5. GitHubの空リポジトリへ接続する
+- Epsilon Labのロゴとヘッダーが表示される
+- 「2点の境界」を選べる
+- 「巣を中心にした縄張りモデル」と表示される
+- サンプルごとに観察ポイントが変わる
+- 点を追加または移動すると「自由配置」になる
+- 点の追加、移動、削除、Undo、最寄り調査、PNG保存が動く
 
-```bash
-git remote add origin \
-  https://github.com/Epsilon-Lab-Atelier/voronoi-field-lab.git
+確認後、ターミナルで `Control + C` を押します。
 
-git remote -v
-```
-
-すでに `origin` が設定されている場合は、次を使います。
-
-```bash
-git remote set-url origin \
-  https://github.com/Epsilon-Lab-Atelier/voronoi-field-lab.git
-```
-
-## 6. コミットする
+## 5. コミットしてpushする
 
 ```bash
-git add .
+git add -A
 git status --short
-git commit -m "Initial release: v0.1.0"
+git commit -m "Release v0.1.1: improve preset learning guides"
+git push origin main
 ```
 
-コミット作者を確認します。
+macOSのキーチェーンにHTTPS認証が保存済みなら、通常はユーザー名やPATの再入力は不要です。
+
+## 6. 任意でタグを付ける
 
 ```bash
-git log -1 --format='%h  %an  <%ae>'
+git tag -a v0.1.1 -m "Voronoi Field Lab v0.1.1"
+git push origin v0.1.1
 ```
 
-次の名義であれば問題ありません。
+## 7. 公開後の確認
 
-```text
-EpsilonLab <310764549+Epsilon-Lab-Atelier@users.noreply.github.com>
-```
-
-## 7. pushする
-
-```bash
-git push -u origin main
-```
-
-HTTPS認証を求められた場合は、Epsilon-Lab-Atelierアカウントで認証します。ターミナルでパスワードを求められた場合、GitHubの通常パスワードではなく、そのアカウント用のPersonal Access Tokenを使用します。
-
-GitHub側のリポジトリは、READMEやLICENSEを追加していない空の状態を想定しています。
-
-## 8. GitHub Pagesを有効にする
-
-GitHub上で次を開きます。
-
-```text
-voronoi-field-lab
-  > Settings
-  > Pages
-```
-
-次のように設定します。
-
-```text
-Source: Deploy from a branch
-Branch: main
-Folder: / (root)
-```
-
-保存後、公開が完了すると次のURLで利用できます。
+GitHub Pagesはmainブランチの更新後に自動で再公開されます。
 
 ```text
 https://epsilon-lab-atelier.github.io/voronoi-field-lab/
 ```
 
-## 9. 公開後の確認
+ブラウザに旧版が残る場合は、強制再読み込みを行います。
 
-- PCで点の追加、移動、削除ができる
-- スマートフォンでタップとドラッグができる
-- km / mileの切り替えで境界が変わらない
-- 最寄り調査モードが動く
-- PNG保存ができる
-- noteへのリンクが開く
-- OGPカードに `og-image.png` が表示される
+- macOS Chrome: `Command + Shift + R`
+- Safari: 開発メニューからキャッシュを空にして再読み込み

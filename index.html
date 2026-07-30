@@ -14,34 +14,30 @@
   <meta property="og:title" content="Voronoi Field Lab | 点を置いて、世界を分けてみよう">
   <meta property="og:description" content="点を追加して動かすだけで、最寄りの領域がリアルタイムに変わります。ボロノイ図と距離の単位を、触って学べる無料アプリ。">
   <meta property="og:url" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/">
- <meta property="og:image" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/assets/images/epsilonlab-header.png">
+  <meta property="og:image" content="https://epsilon-lab-atelier.github.io/voronoi-field-lab/assets/images/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="canonical" href="https://epsilon-lab-atelier.github.io/voronoi-field-lab/">
-  <link rel="icon" type="image/png" href="assets/images/epsilonlab-logo.png">
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="icon" href="assets/images/favicon.png?v=0.1.1" type="image/png">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=0.1.1">
+  <link rel="manifest" href="manifest.webmanifest?v=0.1.1">
+  <link rel="stylesheet" href="assets/css/app.css?v=0.1.1">
   <title>Voronoi Field Lab | EpsilonLab</title>
 </head>
 <body>
   <a class="skip-link" href="#main-content">本文へ移動</a>
 
   <header class="site-header">
-<a class="brand" href="#top" aria-label="Voronoi Field Lab home">
-  <img
-    src="assets/images/epsilonlab-logo.png"
-    alt="Epsilon Lab logo"
-    class="brand__logo"
-  >
-  <div class="brand__text">
-    <span class="brand__title">Voronoi Field Lab</span>
-    <span class="brand__subtitle">by Epsilon Lab</span>
-  </div>
-</a>
+    <a class="brand" href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer" aria-label="Epsilon Labのnoteを開く">
+      <img class="brand-logo" src="assets/images/epsilonlab-logo.png?v=0.1.1" alt="" width="52" height="52">
+      <span>
+        <strong>Epsilon Lab</strong>
+        <small>Science x Inquiry x Life Design</small>
+      </span>
+    </a>
     <nav class="header-links" aria-label="関連リンク">
       <a href="#science">科学の話</a>
       <a href="https://note.com/epsilon_lab" target="_blank" rel="noopener noreferrer">note</a>
@@ -49,22 +45,23 @@
   </header>
 
   <main id="main-content">
-<section class="hero" id="top">
-  <div class="hero__inner">
-    <img
-      src="assets/images/epsilonlab-header.png"
-      alt="Epsilon Lab header"
-      class="hero__image"
-    >
-    <div class="hero__content">
-      <h1>Voronoi Field Lab</h1>
-      <p>
-        点を置くだけで、世界が縄張りに分かれる。
-        いちばん近い場所を可視化する、インタラクティブな学習アプリです。
-      </p>
+    <div class="brand-banner" aria-label="Epsilon Lab - Science x Inquiry x Life Design">
+      <img src="assets/images/epsilonlab-header.png?v=0.1.1" alt="Epsilon Lab - Science x Inquiry x Life Design">
     </div>
-  </div>
-</section>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">INTERACTIVE SCIENCE APP</p>
+        <h1 id="page-title">Voronoi Field Lab</h1>
+        <p class="hero-lead">点を置いて、世界を「いちばん近い場所」に分けてみよう。</p>
+        <p class="hero-note">クリックやタップで点を追加し、ドラッグして動かせます。kmとmileを切り替えても境界が変わらないことも確かめてみてください。</p>
+      </div>
+      <div class="hero-badge" aria-label="無料・登録不要・端末内で処理">
+        <span>FREE</span>
+        <strong>登録不要</strong>
+        <small>データ送信なし</small>
+      </div>
+    </section>
 
     <section class="app-section" aria-labelledby="lab-title">
       <div class="section-heading">
@@ -92,6 +89,12 @@
             </div>
           </div>
 
+          <div id="presetGuide" class="preset-guide preset-guide-workspace" aria-live="polite">
+            <span>観察ポイント</span>
+            <strong id="presetGuideTitle">基本の4点</strong>
+            <p id="presetGuideText">点を1つ動かしたとき、どの境界が動き、どの境界はほとんど変わらないでしょうか。</p>
+          </div>
+
           <div class="canvas-frame" id="canvasFrame">
             <canvas id="voronoiCanvas" tabindex="0" role="application" aria-label="ボロノイ図の編集キャンバス。編集モードでは空白をクリックすると点を追加し、点をドラッグすると移動できます。"></canvas>
             <div class="canvas-hint" id="canvasHint">
@@ -114,8 +117,10 @@
             </div>
             <label for="presetSelect">サンプル</label>
             <select id="presetSelect">
+              <option value="custom" disabled>自由配置</option>
               <option value="sample">基本の4点</option>
-              <option value="territory">動物の縄張り</option>
+              <option value="bisector">2点の境界</option>
+              <option value="territory">巣を中心にした縄張りモデル</option>
               <option value="cluster">密集と孤立</option>
               <option value="grid">ほぼ均等な配置</option>
             </select>
@@ -198,7 +203,7 @@
         </article>
         <article class="stat-card">
           <span>平均領域</span>
-          <strong id="meanAreaStat">15.00 km\UTF{00B2}</strong>
+          <strong id="meanAreaStat">15.00 km²</strong>
           <small>全体面積 / 点の数</small>
         </article>
         <article class="stat-card">
@@ -237,7 +242,7 @@
       <div class="science-grid">
         <article class="science-card">
           <span class="science-index">01</span>
-          <h3>縄張りの単純なモデル</h3>
+          <h3>巣を中心にした縄張りモデル</h3>
           <p>点を動物の巣やねぐらと考えると、それぞれの領域は「いちばん近い巣の範囲」になります。実際の縄張りには餌、水場、地形、個体差も関わるため、これは最初の仮説です。</p>
         </article>
         <article class="science-card">
@@ -258,7 +263,8 @@
           <h3>小さな探究課題</h3>
         </div>
         <ol>
-          <li>点を1つだけゆっくり動かし、どの境界が動くか観察する。</li>
+          <li>「2点の境界」を選び、境界が2点のちょうど中間を通ることを確かめる。</li>
+          <li>点を1つだけゆっくり動かし、変化する領域と変化しない領域を比べる。</li>
           <li>kmとmileを切り替え、領域の形が変わらないことを確かめる。</li>
           <li>点を密集させたとき、領域の面積がどう変わるか比べる。</li>
         </ol>
@@ -269,7 +275,7 @@
   <footer class="site-footer">
     <div>
       <strong>Voronoi Field Lab</strong>
-      <span>v0.1.0</span>
+      <span>v0.1.1</span>
     </div>
     <p>Created by EpsilonLab. このアプリは端末内だけで動作し、入力した点を外部へ送信しません。</p>
     <nav aria-label="フッターリンク">
@@ -285,7 +291,7 @@
     <div class="noscript-message">このアプリを使うにはJavaScriptを有効にしてください。</div>
   </noscript>
 
-  <script src="assets/js/voronoi-core.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/voronoi-core.js?v=0.1.1"></script>
+  <script src="assets/js/app.js?v=0.1.1"></script>
 </body>
 </html>

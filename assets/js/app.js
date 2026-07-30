@@ -1,8 +1,9 @@
 (function startVoronoiFieldLab() {
   "use strict";
 
-  const VERSION = "0.1.0";
-  const STORAGE_KEY = "epsilonlab.voronoi-field-lab.v0.1.0";
+  const VERSION = "0.1.1";
+  const STORAGE_KEY = "epsilonlab.voronoi-field-lab.v0.1.1";
+  const LEGACY_STORAGE_KEYS = ["epsilonlab.voronoi-field-lab.v0.1.0"];
   const MAX_POINTS = 30;
   const FIELD_ASPECT = 5 / 3;
   const MIN_POINT_DISTANCE = 0.018;
@@ -26,6 +27,8 @@
     undoButton: document.getElementById("undoButton"),
     exportButton: document.getElementById("exportButton"),
     presetSelect: document.getElementById("presetSelect"),
+    presetGuideTitle: document.getElementById("presetGuideTitle"),
+    presetGuideText: document.getElementById("presetGuideText"),
     randomCount: document.getElementById("randomCount"),
     randomButton: document.getElementById("randomButton"),
     clearButton: document.getElementById("clearButton"),
@@ -63,6 +66,7 @@
     showFill: true,
     showPointLabels: true,
     showAreas: true,
+    preset: "sample",
     history: [],
   };
 
@@ -72,6 +76,10 @@
       { x: 0.72, y: 0.23 },
       { x: 0.34, y: 0.73 },
       { x: 0.79, y: 0.70 },
+    ],
+    bisector: [
+      { x: 0.29, y: 0.50 },
+      { x: 0.71, y: 0.50 },
     ],
     territory: [
       { x: 0.14, y: 0.22 },
@@ -101,6 +109,33 @@
     ],
   };
 
+  const presetGuides = {
+    sample: {
+      title: "基本の4点",
+      text: "点を1つ動かしたとき、どの境界が動き、どの境界はほとんど変わらないでしょうか。",
+    },
+    bisector: {
+      title: "2点の境界",
+      text: "境界が2点のちょうど中間を通り、2点を結ぶ線に直角になることを確かめてみましょう。",
+    },
+    territory: {
+      title: "巣を中心にした縄張りモデル",
+      text: "各点を巣やねぐらと見立てます。点が密集すると、仮の縄張りが狭くなる様子を観察できます。",
+    },
+    cluster: {
+      title: "密集と孤立",
+      text: "密集した点と孤立した点では、領域の広さにどのような違いが生まれるでしょうか。",
+    },
+    grid: {
+      title: "ほぼ均等な配置",
+      text: "点を規則的に並べると、領域の形や面積がどこまでそろうか比べてみましょう。",
+    },
+    custom: {
+      title: "自由配置",
+      text: "点を1つ追加または移動したとき、変化するのはどの領域でしょうか。近くの点との関係に注目してみましょう。",
+    },
+  };
+
   function createPoint(x, y) {
     return {
       uid: nextUid++,
@@ -123,6 +158,7 @@
       showFill: state.showFill,
       showPointLabels: state.showPointLabels,
       showAreas: state.showAreas,
+      preset: state.preset,
     };
   }
 
@@ -143,6 +179,7 @@
     state.showFill = saved.showFill;
     state.showPointLabels = saved.showPointLabels;
     state.showAreas = saved.showAreas;
+    state.preset = presetGuides[saved.preset] ? saved.preset : "custom";
     nextUid = Math.max(1, ...state.points.map((point) => point.uid + 1));
     syncControlsFromState();
     persistState();
@@ -484,6 +521,7 @@
     computeGeometry();
     draw();
     updateControls();
+    updatePresetGuide();
     updateStats();
     updateRegionTable();
   }
@@ -515,6 +553,17 @@
       elements.canvasHint.innerHTML = "<strong>最寄り調査</strong><span>好きな場所をクリックすると、いちばん近い点を表示</span>";
       elements.canvas.setAttribute("aria-label", "最寄りの点を調べるキャンバス。好きな場所をクリックしてください。");
     }
+  }
+
+  function updatePresetGuide() {
+    const guide = presetGuides[state.preset] || presetGuides.custom;
+    elements.presetSelect.value = state.preset;
+    elements.presetGuideTitle.textContent = guide.title;
+    elements.presetGuideText.textContent = guide.text;
+  }
+
+  function markCustomPreset() {
+    state.preset = "custom";
   }
 
   function updateStats() {
@@ -583,6 +632,7 @@
     elements.fillToggle.checked = state.showFill;
     elements.pointLabelToggle.checked = state.showPointLabels;
     elements.areaToggle.checked = state.showAreas;
+    elements.presetSelect.value = state.preset;
   }
 
   function formatForInput(value) {
@@ -599,6 +649,7 @@
         showFill: state.showFill,
         showPointLabels: state.showPointLabels,
         showAreas: state.showAreas,
+        preset: state.preset,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
     } catch (error) {
@@ -608,14 +659,27 @@
 
   function restorePersistedState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
+      const candidateKeys = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+      let saved = null;
+      let sourceKey = null;
+
+      for (const key of candidateKeys) {
+        const raw = localStorage.getItem(key);
+        if (!raw) {
+          continue;
+        }
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.points)) {
+          saved = parsed;
+          sourceKey = key;
+          break;
+        }
+      }
+
+      if (!saved) {
         return false;
       }
-      const saved = JSON.parse(raw);
-      if (!saved || saved.version !== VERSION || !Array.isArray(saved.points)) {
-        return false;
-      }
+
       state.points = saved.points
         .filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
         .slice(0, MAX_POINTS)
@@ -631,7 +695,12 @@
       state.showFill = saved.showFill !== false;
       state.showPointLabels = saved.showPointLabels !== false;
       state.showAreas = saved.showAreas !== false;
+      state.preset = presetGuides[saved.preset] ? saved.preset : "custom";
       nextUid = Math.max(1, ...state.points.map((point) => point.uid + 1));
+
+      if (sourceKey !== STORAGE_KEY) {
+        persistState();
+      }
       return true;
     } catch (error) {
       return false;
@@ -644,6 +713,7 @@
       pushHistory();
     }
     state.points = source.map((point) => createPoint(point.x, point.y));
+    state.preset = presetGuides[name] ? name : "sample";
     state.selectedUid = null;
     state.probe = null;
     persistState();
@@ -687,6 +757,7 @@
     pushHistory();
     const point = createPoint(position.x, position.y);
     state.points.push(point);
+    markCustomPreset();
     state.selectedUid = point.uid;
     state.probe = null;
     persistState();
@@ -702,6 +773,7 @@
     }
     pushHistory();
     state.points.splice(index, 1);
+    markCustomPreset();
     state.selectedUid = null;
     state.probe = null;
     persistState();
@@ -715,6 +787,7 @@
     }
     pushHistory();
     state.points = [];
+    markCustomPreset();
     state.selectedUid = null;
     state.probe = null;
     persistState();
@@ -850,6 +923,7 @@
         state.history.pop();
         elements.undoButton.disabled = state.history.length === 0;
       } else {
+        markCustomPreset();
         persistState();
         announce("点を移動しました。");
       }
@@ -904,6 +978,7 @@
     pushHistory();
     point.x = candidate.x;
     point.y = candidate.y;
+    markCustomPreset();
     persistState();
     updateAll();
   }
@@ -1032,6 +1107,7 @@
       const count = Number.parseInt(elements.randomCount.value, 10);
       pushHistory();
       state.points = randomPoints(Number.isFinite(count) ? count : 8);
+      markCustomPreset();
       state.selectedUid = null;
       state.probe = null;
       persistState();
@@ -1094,6 +1170,7 @@
     const restored = restorePersistedState();
     if (!restored) {
       state.points = presets.sample.map((point) => createPoint(point.x, point.y));
+      state.preset = "sample";
     }
     syncControlsFromState();
     bindEvents();
